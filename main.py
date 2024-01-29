@@ -1,10 +1,10 @@
 import pandas as pd
-from statsmodels.tsa.arima.model import ARIMA
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
+from tkinter import ttk
+from ARIMA_model import predict_exchange_rate_using_ARIMA
+from randomforest_model import predict_exchange_rate_using_random_forest
 
 # Load the dataset
 df = pd.read_csv('your_dataset.csv')
@@ -21,51 +21,13 @@ df = df.dropna(subset=['Exchange Rate'])
 # Create a unique set of case-insensitive currency names, use camel case
 unique_currency_set = set()
 for currency in df['Country - Currency Description']:
-    unique_currency_set.add(currency.title().replace(" ", ""))
+    unique_currency_set.add(currency.title())
 
 # Convert the set back to a list
 currencies = list(unique_currency_set)
 
-# Function to predict exchange rate for a given currency
-def predict_exchange_rate(currency):
-    currency_df = df[df['Country - Currency Description'].str.lower() == currency.lower()]
-
-    # Sort the data by 'Effective Date'
-    currency_df = currency_df.sort_values(by='Effective Date')
-
-    # Set 'Effective Date' as the index
-    currency_df.set_index('Effective Date', inplace=True)
-
-    # Split the data into training and testing sets
-    train_size = int(len(currency_df) * 0.8)
-    train, test = currency_df[:train_size], currency_df[train_size:]
-
-    # Convert the 'Exchange Rate' column to a one-dimensional array
-    train_exchange_rate = train['Exchange Rate'].values
-
-    # Fit ARIMA model
-    model = ARIMA(train_exchange_rate, order=(5, 1, 0))  # Adjust order as needed
-    model_fit = model.fit()
-
-    # Convert the 'Exchange Rate' column to a one-dimensional array for testing
-    test_exchange_rate = test['Exchange Rate'].values
-
-    # Make predictions
-    predictions = model_fit.predict(start=len(train), end=len(train) + len(test) - 1, dynamic=False)
-
-    # Calculate RMSE (Root Mean Squared Error) for evaluation
-    rmse = mean_squared_error(test_exchange_rate, predictions, squared=False)
-    print(f'RMSE for {currency}: {rmse}')
-
-    # Plotting with adjusted figure size
-    fig, ax = plt.subplots(figsize=(6, 4))  # Adjust the figure size as needed
-    ax.plot(train.index, train['Exchange Rate'], label='Training Data')
-    ax.plot(test.index, test['Exchange Rate'], label='Actual Exchange Rate')
-    ax.plot(test.index, predictions, label='Predicted Exchange Rate')
-    ax.set_title(f'Exchange Rate Prediction for {currency}')
-    ax.legend()
-
-    return fig, rmse
+# Available models
+available_models = ['ARIMA', 'Random Forest']
 
 # Function to handle suggestion selection and completion
 def select_suggestion(event):
@@ -78,14 +40,6 @@ def select_suggestion(event):
         search_entry.focus_set()  # Set focus back to entry box
         update_plot(completed_text)
         suggestion_listbox.place_forget()  # Hide the suggestion list
-
-def update_plot(text):
-    if text in currencies:
-        plt.clf()  # Clear the previous plot
-        fig, rmse = predict_exchange_rate(text)
-        canvas.figure = fig
-        canvas.draw()
-        rmse_label['text'] = f'RMSE: {rmse}'
 
 # Function to update plot based on entry box content
 def update_plot_from_entry(event):
@@ -107,7 +61,23 @@ def update_plot_from_entry(event):
         suggestion_listbox.place(x=search_entry.winfo_x(), y=search_entry.winfo_y() + search_entry.winfo_height())
     else:
         suggestion_listbox.place_forget()
-    
+
+
+# Function to update the plot
+def update_plot(text):
+    if text in currencies:
+        plt.clf()  # Clear the previous plot
+        selected_model = model_var.get()
+        if selected_model == 'ARIMA':
+            fig, rmse = predict_exchange_rate_using_ARIMA(text, df)
+        elif selected_model == 'Random Forest':
+            fig, rmse = predict_exchange_rate_using_random_forest(text, df)
+        else:
+            return
+
+        canvas.figure = fig
+        canvas.draw()
+        rmse_label['text'] = f'RMSE: {rmse}'
 
 # Create the Tkinter root window
 root = tk.Tk()
@@ -120,6 +90,15 @@ search_var = tk.StringVar()
 search_entry = tk.Entry(root, textvariable=search_var)
 search_entry.pack(side=tk.LEFT)
 search_entry.bind('<KeyRelease>', update_plot_from_entry)
+
+# Add a dropdown menu for model selection
+search_label = tk.Label(root, text="Select Model")
+search_label.pack(side=tk.TOP)
+model_var = tk.StringVar()
+model_var.set(available_models[0])  # Set the default model
+model_dropdown = ttk.Combobox(root, textvariable=model_var, values=available_models)
+model_dropdown.pack(side=tk.TOP)
+model_dropdown.bind("<<ComboboxSelected>>", lambda event: update_plot(search_var.get()))
 
 # Add RMSE label
 rmse_label = tk.Label(root, text="")
