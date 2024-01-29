@@ -10,14 +10,6 @@ This project focuses on predicting currency exchange rates using machine learnin
   - ARIMA (Autoregressive Integrated Moving Average)
 - **Visualization Tool:** Tkinter GUI with Matplotlib integration.
 
-## Project Structure
-
-- **`data/`:** Directory for storing dataset files.
-- **`models/`:** Contains scripts for training and using machine learning models.
-- **`visualization/`:** Tkinter GUI implementation and visualization scripts.
-- **`utils/`:** Utility scripts for data processing, file handling, and preprocessing.
-- **`main.py`:** Main script to run the Tkinter GUI and execute the currency prediction.
-
 ## Dependencies
 
 - Python 3.x
@@ -39,10 +31,3 @@ This project focuses on predicting currency exchange rates using machine learnin
 2. Enter the currency for which you want to predict exchange rates.
 3. View the predicted exchange rates along with a comparison to the actual rates in the plotted graph.
 
-## Contributing
-
-1. Fork the repository.
-2. Create a new branch: `git checkout -b feature/your-feature-name`
-3. Commit your changes: `git commit -m 'Add your feature'`
-4. Push to the branch: `git push origin feature/your-feature-name`
-5. Create a pull request.
