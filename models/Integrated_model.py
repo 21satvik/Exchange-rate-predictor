@@ -1,8 +1,8 @@
 from matplotlib import pyplot as plt
 from sklearn.metrics import mean_squared_error
-from ARIMA_model import predict_exchange_rate_using_ARIMA
-from GBM_model import predict_exchange_rate_using_GBM
-from randomforest_model import predict_exchange_rate_using_random_forest
+from models.ARIMA_model import predict_exchange_rate_using_ARIMA
+from models.GBM_model import predict_exchange_rate_using_GBM
+from models.randomforest_model import predict_exchange_rate_using_random_forest
 
 def predict_exchange_rate_using_integrated_model(currency, df):
     arima_fig, arima_rmse = predict_exchange_rate_using_ARIMA(currency, df)
