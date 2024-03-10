@@ -8,7 +8,6 @@ from models.GBM_model import predict_exchange_rate_using_GBM
 from models.ARIMA_model import predict_exchange_rate_using_ARIMA
 from models.randomforest_model import predict_exchange_rate_using_random_forest
 
-
 # Load the dataset
 df = pd.read_csv('data\your_dataset.csv')
 
