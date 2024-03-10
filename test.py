@@ -3,13 +3,14 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
 from tkinter import ttk
-from ARIMA_model import predict_exchange_rate_using_ARIMA
-from Integrated_model import predict_exchange_rate_using_integrated_model
-from GBM_model import predict_exchange_rate_using_GBM
-from randomforest_model import predict_exchange_rate_using_random_forest
+from models.Integrated_model import predict_exchange_rate_using_integrated_model
+from models.GBM_model import predict_exchange_rate_using_GBM
+from models.ARIMA_model import predict_exchange_rate_using_ARIMA
+from models.randomforest_model import predict_exchange_rate_using_random_forest
+
 
 # Load the dataset
-df = pd.read_csv('your_dataset.csv')
+df = pd.read_csv('data\your_dataset.csv')
 
 # Assuming 'Effective Date' is datetime format, if not, convert it to datetime
 df['Effective Date'] = pd.to_datetime(df['Effective Date'])
