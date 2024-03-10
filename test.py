@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
 from tkinter import ttk
+from models.Integrated_model import predict_exchange_rate_using_integrated_model
+from models.GBM_model import predict_exchange_rate_using_GBM
 from models.ARIMA_model import predict_exchange_rate_using_ARIMA
 from models.randomforest_model import predict_exchange_rate_using_random_forest
 
@@ -27,7 +29,7 @@ for currency in df['Country - Currency Description']:
 currencies = list(unique_currency_set)
 
 # Available models
-available_models = ['ARIMA', 'Random Forest']
+available_models = ['ARIMA', 'Random Forest','GBM', 'Integrated']
 
 # Function to handle suggestion selection and completion
 def select_suggestion(event):
@@ -62,7 +64,6 @@ def update_plot_from_entry(event):
     else:
         suggestion_listbox.place_forget()
 
-
 # Function to update the plot
 def update_plot(text):
     if text in currencies:
@@ -72,6 +73,10 @@ def update_plot(text):
             fig, rmse = predict_exchange_rate_using_ARIMA(text, df)
         elif selected_model == 'Random Forest':
             fig, rmse = predict_exchange_rate_using_random_forest(text, df)
+        elif selected_model == 'GBM':
+            fig, rmse = predict_exchange_rate_using_GBM(text, df)
+        elif selected_model == 'Integrated':
+            fig, rmse = predict_exchange_rate_using_integrated_model(text, df)
         else:
             return
 
